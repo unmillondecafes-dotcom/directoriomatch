@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Directorio — Café Itinerante</title>
+<link href="https://fonts.googleapis.com/css2?family=Raleway:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+@font-face {
+  font-family: 'Sifonn';
+  src: url('data:font/otf;base64,T1RUTwAMAIAAAwBAQ0ZGIKmB54gAAVZgAAF4akdQT1PGLaGIAABJsAAA+bhHU1VCETG+aQABQ2gAABL2T1MvMoQFuL8AAAEwAAAAYGNtYXB2cXM5AAAFOAAABUpoZWFkAo2npwAAAMwAAAA2aGhlYQluCYAAAAEEAAAAJGhtdHh0oH4wAAAKhAAADvhrZXJutwO73wAAGZwAADASbWF4cAO+UAAAAAEoAAAABm5hbWWETJTJAAABkAAAA6Zwb3N0/6sAOgAAGXwAAAAg') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --rosa: #f3cde9;
+  --vino: #650b21;
+  --crema: #fff9f2;
+  --vino-light: #f9eaee;
+  --vino-mid: #a01535;
+  --muted: #9b6b78;
+  --border: #e8c4d4;
+}
+body {
+  font-family: 'Raleway', sans-serif;
+  background: var(--crema);
+  color: var(--vino);
+  min-height: 100vh;
+}
+
+/* HEADER */
+.header {
+  text-align: center;
+  padding: 44px 24px 36px;
+  background: var(--vino);
+}
+.header-logo {
+  font-family: 'Sifonn', sans-serif;
+  font-size: 12px;
+  letter-spacing: .2em;
+  color: var(--rosa);
+  text-transform: uppercase;
+  margin-bottom: 14px;
+  opacity: .85;
+}
+.header h1 {
+  font-family: 'Sifonn', sans-serif;
+  font-size: clamp(28px, 6vw, 48px);
+  color: var(--crema);
+  margin-bottom: 10px;
+  line-height: 1.05;
+}
+.header p {
+  font-size: 14px;
+  color: rgba(243,205,233,.8);
+  max-width: 440px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+/* WAVE */
+.wave {
+  display: block; background: var(--vino);
+  height: 28px; position: relative; overflow: hidden;
+}
+.wave::after {
+  content: '';
+  position: absolute; bottom: 0; left: 0; right: 0;
+  height: 28px;
+  background: var(--crema);
+  border-radius: 50% 50% 0 0 / 100% 100% 0 0;
+}
+
+/* CONTENEDOR */
+.container { max-width: 720px; margin: 0 auto; padding: 0 20px 80px; }
+
+/* FILTROS */
+.filtros {
+  padding-top: 32px;
+  margin-bottom: 28px;
+}
+.filtros-titulo {
+  font-size: 11px; font-weight: 600; letter-spacing: .15em;
+  text-transform: uppercase; color: var(--muted); margin-bottom: 14px;
+}
+.filtros-row {
+  display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 10px;
+}
+.filtro-select {
+  flex: 1; min-width: 160px;
+  padding: 11px 16px;
+  background: white; border: 1.5px solid var(--border);
+  border-radius: 12px; font-family: 'Raleway', sans-serif;
+  font-size: 14px; color: var(--vino); outline: none;
+  cursor: pointer; transition: border-color .2s;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%239b6b78' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  padding-right: 36px;
+}
+.filtro-select:focus { border-color: var(--vino-mid); }
+.filtro-buscar {
+  flex: 1; min-width: 200px;
+  padding: 11px 16px;
+  background: white; border: 1.5px solid var(--border);
+  border-radius: 12px; font-family: 'Raleway', sans-serif;
+  font-size: 14px; color: var(--vino); outline: none;
+  transition: border-color .2s;
+}
+.filtro-buscar:focus { border-color: var(--vino-mid); }
+.filtro-buscar::placeholder { color: var(--border); }
+.btn-limpiar {
+  padding: 11px 18px; border-radius: 12px;
+  border: 1.5px solid var(--border); background: white;
+  font-family: 'Raleway', sans-serif; font-size: 13px;
+  font-weight: 600; color: var(--muted); cursor: pointer;
+  transition: all .2s; white-space: nowrap;
+}
+.btn-limpiar:hover { background: var(--vino-light); color: var(--vino); border-color: var(--vino-mid); }
+
+/* CONTADOR */
+.contador {
+  font-size: 13px; color: var(--muted); margin-bottom: 20px;
+}
+.contador strong { color: var(--vino); font-weight: 600; }
+
+/* CARDS */
+.dir-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 14px;
+}
+.dir-card {
+  background: white; border: 1.5px solid var(--border);
+  border-radius: 18px; padding: 20px;
+  transition: box-shadow .2s, transform .2s;
+}
+.dir-card:hover { box-shadow: 0 6px 24px rgba(101,11,33,.1); transform: translateY(-2px); }
+.dir-card-top { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
+.dir-avatar {
+  width: 44px; height: 44px; border-radius: 50%;
+  background: var(--rosa); display: flex; align-items: center; justify-content: center;
+  font-family: 'Sifonn', sans-serif; font-size: 18px; color: var(--vino); flex-shrink: 0;
+}
+.dir-info { flex: 1; }
+.dir-nombre { font-family: 'Sifonn', sans-serif; font-size: 18px; color: var(--vino); margin-bottom: 2px; }
+.dir-ubicacion { font-size: 12px; color: var(--muted); font-weight: 500; }
+.dir-bio {
+  font-size: 13px; color: var(--muted); line-height: 1.6; margin-bottom: 12px;
+  display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;
+}
+.dir-intereses { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 12px; }
+.dir-tag {
+  font-size: 11px; font-weight: 600; padding: 3px 10px;
+  border-radius: 20px; background: var(--rosa); color: var(--vino);
+}
+.dir-link {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-size: 12px; font-weight: 600; color: var(--vino);
+  text-decoration: none; border: 1.5px solid var(--border);
+  border-radius: 8px; padding: 6px 12px; transition: all .2s;
+}
+.dir-link:hover { background: var(--vino-light); border-color: var(--vino-mid); }
+
+/* EMPTY */
+.dir-empty {
+  text-align: center; padding: 60px 20px;
+  color: var(--muted); font-size: 15px; line-height: 1.7;
+}
+.dir-empty span { font-size: 36px; display: block; margin-bottom: 14px; }
+
+/* LOADING */
+.loading {
+  text-align: center; padding: 60px 20px;
+  color: var(--muted); font-size: 14px;
+}
+.loading span { font-size: 32px; display: block; margin-bottom: 12px; animation: spin 2s linear infinite; }
+@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+/* FOOTER */
+.footer {
+  text-align: center; padding: 24px; font-size: 12px;
+  color: var(--muted); border-top: 1px solid var(--border); margin-top: 40px;
+}
+.footer a { color: var(--vino-mid); text-decoration: none; font-weight: 600; }
+
+/* SUMARSE BTN */
+.sumarse-wrap { text-align: center; padding: 28px 0 0; }
+.sumarse-btn {
+  display: inline-block; padding: 14px 28px;
+  background: var(--vino); color: var(--crema); border-radius: 14px;
+  font-size: 14px; font-weight: 700; text-decoration: none;
+  font-family: 'Raleway', sans-serif; text-transform: uppercase; letter-spacing: .06em;
+  transition: all .2s;
+}
+.sumarse-btn:hover { background: var(--vino-mid); transform: translateY(-1px); }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-logo">Un Millón de Cafés</div>
+  <h1>EL DIRECTORIO</h1>
+  <p>Todas las personas que ya eligieron conocerse de verdad. Encontrá tu próximo café.</p>
+</div>
+<div class="wave"></div>
+
+<div class="container">
+
+  <div class="filtros">
+    <div class="filtros-titulo">Filtrar el directorio</div>
+    <div class="filtros-row">
+      <select class="filtro-select" id="filtro-pais" onchange="aplicarFiltros()">
+        <option value="">Todos los países</option>
+      </select>
+      <select class="filtro-select" id="filtro-ciudad" onchange="aplicarFiltros()">
+        <option value="">Todas las ciudades</option>
+      </select>
+      <input class="filtro-buscar" id="filtro-buscar" type="text" placeholder="Buscar por nombre o interés..." oninput="aplicarFiltros()">
+      <button class="btn-limpiar" onclick="limpiarFiltros()">Limpiar</button>
+    </div>
+  </div>
+
+  <div class="contador" id="contador"></div>
+  <div id="dir-container"><div class="loading"><span>☕</span>Cargando el directorio...</div></div>
+
+  <div class="sumarse-wrap">
+    <a class="sumarse-btn" href="https://unmillondecafes.com" target="_blank">unmillondecafes.com</a>
+  </div>
+
+</div>
+
+<div class="footer">
+  Un proyecto de <a href="https://gisellepronesti.com" target="_blank">Giselle Pronesti</a> · <a href="https://unmillondecafes.com" target="_blank">@unmillondecafes</a>
+</div>
+
+<script>
+const WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbxrDduFTSV-kn7xKQjKnRQALPkDc6_3l0rNLT7TcF2vT-GRWBNb4P-Ta1qe-QpSlnuQ/exec';
+
+let DIRECTORIO = [];
+let paisActual = '';
+let ciudadActual = '';
+
+// ── CARGAR ────────────────────────────────────────────────────────────────────
+async function cargarDirectorio() {
+  try {
+    const resp = await fetch(WEBHOOK_URL, { method: 'GET' });
+    if (!resp.ok) throw new Error('Error ' + resp.status);
+    const resultado = await resp.json();
+    if (resultado.status === 'ok' && resultado.directorio) {
+      DIRECTORIO = resultado.directorio.filter(p =>
+        p.nombre && p.ciudad && p.ciudad.split(' ').length <= 4
+      );
+      DIRECTORIO.sort((a, b) => {
+        if (a.pais < b.pais) return -1;
+        if (a.pais > b.pais) return 1;
+        if (a.ciudad < b.ciudad) return -1;
+        if (a.ciudad > b.ciudad) return 1;
+        return a.nombre.localeCompare(b.nombre);
+      });
+      poblarFiltros();
+      renderDirectorio(DIRECTORIO);
+    } else {
+      throw new Error('Respuesta inesperada');
+    }
+  } catch(e) {
+    console.warn('Error cargando directorio:', e);
+    document.getElementById('dir-container').innerHTML = `<div class="dir-empty"><span>☕</span>No se pudo cargar el directorio. Intentá de nuevo en un momento.</div>`;
+  }
+}
+
+// ── FILTROS ───────────────────────────────────────────────────────────────────
+function poblarFiltros() {
+  const paises = [...new Set(DIRECTORIO.map(p => p.pais).filter(Boolean))].sort();
+  const selPais = document.getElementById('filtro-pais');
+  paises.forEach(p => {
+    const opt = document.createElement('option');
+    opt.value = p; opt.textContent = p;
+    selPais.appendChild(opt);
+  });
+}
+
+function actualizarCiudades(pais) {
+  const selCiudad = document.getElementById('filtro-ciudad');
+  selCiudad.innerHTML = '<option value="">Todas las ciudades</option>';
+  const fuente = pais ? DIRECTORIO.filter(p => p.pais === pais) : DIRECTORIO;
+  const ciudades = [...new Set(fuente.map(p => p.ciudad).filter(Boolean))].sort();
+  ciudades.forEach(c => {
+    const opt = document.createElement('option');
+    opt.value = c; opt.textContent = c;
+    selCiudad.appendChild(opt);
+  });
+  // Restaurar selección si sigue siendo válida
+  if (ciudadActual && ciudades.includes(ciudadActual)) {
+    selCiudad.value = ciudadActual;
+  } else {
+    ciudadActual = '';
+  }
+}
+
+function aplicarFiltros() {
+  const nuevoPais = document.getElementById('filtro-pais').value;
+  // Si cambió el país, actualizar ciudades disponibles
+  if (nuevoPais !== paisActual) {
+    paisActual = nuevoPais;
+    actualizarCiudades(paisActual);
+  }
+  ciudadActual = document.getElementById('filtro-ciudad').value;
+  const busqueda = document.getElementById('filtro-buscar').value.toLowerCase().trim();
+
+  let resultado = DIRECTORIO;
+  if (paisActual) resultado = resultado.filter(p => p.pais === paisActual);
+  if (ciudadActual) resultado = resultado.filter(p => p.ciudad === ciudadActual);
+  if (busqueda) {
+    resultado = resultado.filter(p =>
+      p.nombre.toLowerCase().includes(busqueda) ||
+      p.bio.toLowerCase().includes(busqueda) ||
+      p.intereses.some(i => i.includes(busqueda))
+    );
+  }
+  renderDirectorio(resultado);
+}
+
+function limpiarFiltros() {
+  paisActual = '';
+  ciudadActual = '';
+  document.getElementById('filtro-pais').value = '';
+  document.getElementById('filtro-ciudad').value = '';
+  document.getElementById('filtro-buscar').value = '';
+  actualizarCiudades('');
+  renderDirectorio(DIRECTORIO);
+}
+
+// ── RENDER ────────────────────────────────────────────────────────────────────
+function renderDirectorio(lista) {
+  const container = document.getElementById('dir-container');
+  const total = lista.length;
+  document.getElementById('contador').innerHTML = total > 0
+    ? `Mostrando <strong>${total}</strong> persona${total !== 1 ? 's' : ''} en el directorio`
+    : '';
+
+  if (!total) {
+    container.innerHTML = `<div class="dir-empty"><span>☕</span>No hay personas con esos filtros todavía.<br>Sé la primera en tu zona — ¡sumate!</div>`;
+    return;
+  }
+
+  container.innerHTML = `<div class="dir-grid">${lista.map(m => cardHTML(m)).join('')}</div>`;
+}
+
+function cardHTML(m) {
+  const initial = m.nombre.charAt(0).toUpperCase();
+  let ig = m.instagram ? m.instagram.trim().replace(/^@/, '').replace(/https?:\/\/(www\.)?instagram\.com\//, '') : null;
+  if (ig && ig.includes(' ')) ig = ig.split(' ')[0];
+  const igHandle = ig && ig.length > 1 ? '@' + ig.replace(/^@/, '') : null;
+  const igUrl = igHandle ? `https://instagram.com/${igHandle.replace(/^@/, '')}` : null;
+  const location = [m.ciudad, m.pais].filter(Boolean).join(', ');
+  const tags = (m.intereses || []).slice(0, 4).map(t => `<span class="dir-tag">${t}</span>`).join('');
+  const linkHtml = igHandle && igUrl
+    ? `<a class="dir-link" href="${igUrl}" target="_blank">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>
+        ${igHandle}
+       </a>`
+    : m.instagram
+      ? `<a class="dir-link" href="${m.instagram.startsWith('http') ? m.instagram : 'https://' + m.instagram}" target="_blank">🔗 ${m.instagram}</a>`
+      : '';
+
+  return `<div class="dir-card">
+    <div class="dir-card-top">
+      <div class="dir-avatar">${initial}</div>
+      <div class="dir-info">
+        <div class="dir-nombre">${m.nombre}</div>
+        <div class="dir-ubicacion">📍 ${location}</div>
+      </div>
+    </div>
+    ${m.bio ? `<p class="dir-bio">${m.bio}</p>` : ''}
+    ${tags ? `<div class="dir-intereses">${tags}</div>` : ''}
+    ${linkHtml}
+  </div>`;
+}
+
+// Iniciar
+cargarDirectorio();
+</script>
+</body>
+</html>
