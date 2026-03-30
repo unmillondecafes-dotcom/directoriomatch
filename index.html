@@ -693,7 +693,10 @@ function goStep(n) {
     state.nombre   = document.getElementById('inp-nombre').value.trim();
     state.pais     = document.getElementById('inp-pais').value.trim();
     state.ciudad   = document.getElementById('inp-ciudad').value.trim();
-    state.instagram = document.getElementById('inp-ig').value.trim();
+    const igRaw    = document.getElementById('inp-ig').value.trim();
+    // Si es un handle de Instagram (empieza con @ o no tiene punto/slash), limpiar el @
+    // Si es una URL completa, guardarla tal cual
+    state.instagram = igRaw.startsWith('http') ? igRaw : igRaw.replace(/^@/, '');
     if (!state.nombre)    { alert('Ponele tu nombre, dale 😊'); return; }
     if (!state.pais)      { alert('Contanos en qué país estás'); return; }
     if (!state.ciudad)    { alert('Contanos en qué ciudad estás'); return; }
@@ -841,15 +844,31 @@ function renderMatches(matches, city) {
 
   container.innerHTML = matches.map(m => {
     const initial = m.nombre.charAt(0).toUpperCase();
-    let ig = m.instagram ? m.instagram.trim().replace(/^@/, '').replace(/https?:\/\/(www\.)?instagram\.com\//, '') : null;
-    if (ig && ig.includes(' ')) ig = ig.split(' ')[0];
-    const igHandle = ig && ig.length > 1 ? '@' + ig.replace(/^@/, '') : null;
-    const igUrl = igHandle ? `https://instagram.com/${igHandle.replace(/^@/, '')}` : null;
     const scoreLabel = m.score >= 65 ? '✦ Match perfecto' : m.score >= 45 ? '✦ Gran match' : '✦ Buen match';
     const tags = m.commonInterests && m.commonInterests.length
       ? m.commonInterests.map(t => `<span class="match-tag">${t}</span>`).join('')
       : (m.intereses || []).slice(0, 2).map(t => `<span class="match-tag">${t}</span>`).join('');
     const location = [m.ciudad, m.pais].filter(Boolean).join(', ');
+
+    // Construir link de red social
+    let redSocialHtml = '';
+    const ig = (m.instagram || '').trim().replace(/^@/, '');
+    if (ig) {
+      if (ig.startsWith('http')) {
+        // URL completa (LinkedIn, etc.)
+        const label = ig.replace(/https?:\/\/(www\.)?/, '').split('/')[0];
+        redSocialHtml = `<a class="match-link" href="${ig}" target="_blank">🔗 ${label}</a>`;
+      } else if (ig.includes('.com') || ig.includes('.net') || ig.includes('.org')) {
+        // Dominio sin http
+        redSocialHtml = `<a class="match-link" href="https://${ig}" target="_blank">🔗 ${ig}</a>`;
+      } else {
+        // Handle de Instagram
+        redSocialHtml = `<a class="match-link" href="https://instagram.com/${ig}" target="_blank">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>
+          @${ig}
+        </a>`;
+      }
+    }
 
     return `<div class="match-card">
       <div class="match-card-top">
@@ -862,16 +881,7 @@ function renderMatches(matches, city) {
       </div>
       <p class="match-bio">${m.bio || 'Sin presentación todavía.'}</p>
       <div class="match-tags">${tags}</div>
-      <div class="match-actions">
-        ${igHandle && igUrl
-          ? `<a class="match-link" href="${igUrl}" target="_blank">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>
-              ${igHandle}
-             </a>`
-          : m.instagram
-            ? `<a class="match-link" href="${m.instagram.startsWith('http') ? m.instagram : 'https://' + m.instagram}" target="_blank">🔗 ${m.instagram}</a>`
-            : ''}
-      </div>
+      <div class="match-actions">${redSocialHtml}</div>
     </div>`;
   }).join('');
 }
