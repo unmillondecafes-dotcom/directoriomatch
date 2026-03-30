@@ -732,15 +732,19 @@ function isNearBA(city) {
 }
 
 function scoreMatch(person, targetCity, targetPais) {
+  // No mostrarse a sí misma
   if (person.nombre === state.nombre && person.ciudad === state.ciudad) return null;
-  let score = 0;
-  // Mismo país suma base
-  const mismoPais = person.pais && targetPais && person.pais.toLowerCase() === targetPais.toLowerCase();
-  if (mismoPais) score += 10;
-  // Misma ciudad
-  if (person.ciudad === targetCity) score += 50;
-  else if (isNearBA(person.ciudad) && isNearBA(targetCity)) score += 25;
-  if (score < 10) return null; // necesita al menos coincidir en algo
+
+  // Comparar ciudad Y país juntos
+  const mismoPais = person.pais && targetPais &&
+    person.pais.trim().toLowerCase() === targetPais.trim().toLowerCase();
+  const mismaCiudad = person.ciudad === targetCity;
+  const zonaBA = isNearBA(person.ciudad) && isNearBA(targetCity) && mismoPais;
+
+  // Solo matchea si es misma ciudad+país, o zona GBA del mismo país
+  if (!((mismaCiudad && mismoPais) || zonaBA)) return null;
+
+  let score = mismaCiudad ? 50 : 25; // zona BA suma menos
   const common = (person.intereses || []).filter(i => state.intereses.includes(i));
   score += common.length * 15 + Math.random() * 5;
   return { ...person, score, commonInterests: common };
