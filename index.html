@@ -566,9 +566,15 @@ function cargarDirectorio() {
       if (!resp.ok) throw new Error('Error ' + resp.status);
       const resultado = await resp.json();
       if (resultado.status === 'ok' && resultado.directorio) {
-        DIRECTORIO = resultado.directorio.filter(p =>
+        let lista = resultado.directorio.filter(p =>
           p.nombre && p.ciudad && p.ciudad.split(' ').length <= 4
         );
+        // Mezclar aleatoriamente para que cada persona reciba matches distintos
+        for (let i = lista.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [lista[i], lista[j]] = [lista[j], lista[i]];
+        }
+        DIRECTORIO = lista;
         DIRECTORIO.forEach(p => {
           if (p.pais && !PAISES_BASE.includes(p.pais) && !customPaises.includes(p.pais)) customPaises.push(p.pais);
           if (p.ciudad && !CITIES_BASE.includes(p.ciudad) && !customCities.includes(p.ciudad)) customCities.push(p.ciudad);
@@ -577,12 +583,16 @@ function cargarDirectorio() {
       }
     } catch(e) {
       console.warn('Error cargando directorio:', e);
-      // Fallback al CSV publicado
       try {
         const csvProxy = 'https://api.allorigins.win/raw?url=' + encodeURIComponent(SHEETS_CSV_URL);
         const resp2 = await fetch(csvProxy);
         const text = await resp2.text();
         DIRECTORIO = parseCSV(text);
+        // Mezclar también el fallback
+        for (let i = DIRECTORIO.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [DIRECTORIO[i], DIRECTORIO[j]] = [DIRECTORIO[j], DIRECTORIO[i]];
+        }
         console.log('Directorio cargado desde CSV fallback:', DIRECTORIO.length, 'personas');
       } catch(e2) {
         console.warn('Fallback CSV también falló:', e2);
@@ -747,9 +757,10 @@ function scoreMatch(person, targetCity, targetPais) {
   // Solo matchea si es misma ciudad+país, o zona GBA del mismo país
   if (!((mismaCiudad && mismoPais) || zonaBA)) return null;
 
-  let score = mismaCiudad ? 50 : 25; // zona BA suma menos
+  let score = mismaCiudad ? 50 : 25;
   const common = (person.intereses || []).filter(i => state.intereses.includes(i));
-  score += common.length * 15 + Math.random() * 5;
+  // Aleatoriedad alta dentro del mismo nivel de afinidad
+  score += common.length * 100 + Math.random() * 80;
   return { ...person, score, commonInterests: common };
 }
 
