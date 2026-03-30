@@ -765,11 +765,54 @@ function scoreMatch(person, targetCity, targetPais) {
 }
 
 function getMatchesForCity(city, pais) {
-  return DIRECTORIO
-    .map(p => scoreMatch(p, city, pais || state.pais))
-    .filter(Boolean)
-    .sort((a, b) => b.score - a.score)
-    .slice(0, 3);
+  const GBA = ['Buenos Aires','GBA Sur','GBA Norte','GBA Oeste','Canning','Pilar','San Isidro','Ituzaingó','Los Cardales'];
+
+  // Filtrar candidatos válidos: misma ciudad+país o zona GBA del mismo país
+  const candidatos = DIRECTORIO.filter(p => {
+    if (p.nombre === state.nombre && p.ciudad === state.ciudad) return false;
+    const mismoPais = p.pais && pais &&
+      p.pais.trim().toLowerCase() === (pais || '').trim().toLowerCase();
+    const mismaCiudad = p.ciudad === city;
+    const zonaBA = GBA.includes(p.ciudad) && GBA.includes(city) && mismoPais;
+    return (mismaCiudad && mismoPais) || zonaBA;
+  });
+
+  if (!candidatos.length) return [];
+
+  // Separar por afinidad de intereses
+  const conAfinidad = [];
+  const sinAfinidad = [];
+  for (const c of candidatos) {
+    const comunes = (c.intereses || []).filter(i => state.intereses.includes(i));
+    if (comunes.length > 0) {
+      conAfinidad.push({ ...c, commonInterests: comunes, _comunes: comunes.length });
+    } else {
+      sinAfinidad.push({ ...c, commonInterests: [], _comunes: 0 });
+    }
+  }
+
+  // Mezclar aleatoriamente dentro de cada grupo
+  function shuffle(arr) {
+    const a = [...arr];
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+  }
+
+  // Agrupar con afinidad por nivel y mezclar dentro de cada nivel
+  const grupos = {};
+  for (const c of conAfinidad) {
+    if (!grupos[c._comunes]) grupos[c._comunes] = [];
+    grupos[c._comunes].push(c);
+  }
+  const conAfinidadMezclado = Object.keys(grupos)
+    .map(Number).sort((a, b) => b - a)
+    .flatMap(n => shuffle(grupos[n]));
+
+  const resultado = [...conAfinidadMezclado, ...shuffle(sinAfinidad)].slice(0, 3);
+  return resultado.map(m => ({ ...m, score: 99 }));
 }
 
 // ── SUBMIT ────────────────────────────────────────────────────────────────────
