@@ -767,7 +767,6 @@ function scoreMatch(person, targetCity, targetPais) {
 function getMatchesForCity(city, pais) {
   const GBA = ['Buenos Aires','GBA Sur','GBA Norte','GBA Oeste','Canning','Pilar','San Isidro','Ituzaingó','Los Cardales'];
 
-  // Filtrar candidatos válidos: misma ciudad+país o zona GBA del mismo país
   const candidatos = DIRECTORIO.filter(p => {
     if (p.nombre === state.nombre && p.ciudad === state.ciudad) return false;
     const mismoPais = p.pais && pais &&
@@ -777,9 +776,11 @@ function getMatchesForCity(city, pais) {
     return (mismaCiudad && mismoPais) || zonaBA;
   });
 
+  console.log('Candidatos en', city, ':', candidatos.length);
+  console.log('Primeros 5:', candidatos.slice(0,5).map(c => c.nombre));
+
   if (!candidatos.length) return [];
 
-  // Separar por afinidad de intereses
   const conAfinidad = [];
   const sinAfinidad = [];
   for (const c of candidatos) {
@@ -791,7 +792,8 @@ function getMatchesForCity(city, pais) {
     }
   }
 
-  // Mezclar aleatoriamente dentro de cada grupo
+  console.log('Con afinidad:', conAfinidad.length, 'Sin afinidad:', sinAfinidad.length);
+
   function shuffle(arr) {
     const a = [...arr];
     for (let i = a.length - 1; i > 0; i--) {
@@ -801,7 +803,6 @@ function getMatchesForCity(city, pais) {
     return a;
   }
 
-  // Agrupar con afinidad por nivel y mezclar dentro de cada nivel
   const grupos = {};
   for (const c of conAfinidad) {
     if (!grupos[c._comunes]) grupos[c._comunes] = [];
@@ -812,6 +813,7 @@ function getMatchesForCity(city, pais) {
     .flatMap(n => shuffle(grupos[n]));
 
   const resultado = [...conAfinidadMezclado, ...shuffle(sinAfinidad)].slice(0, 3);
+  console.log('Matches finales:', resultado.map(m => m.nombre));
   return resultado.map(m => ({ ...m, score: 99 }));
 }
 
